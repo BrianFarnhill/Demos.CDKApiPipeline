@@ -1,4 +1,4 @@
-import { expect as expectCDK, matchTemplate, MatchStyle, haveResourceLike, arrayWith, objectLike } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResourceLike, arrayWith, objectLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import * as DemosCdkApiPipeline from '../lib/MainStack';
 
