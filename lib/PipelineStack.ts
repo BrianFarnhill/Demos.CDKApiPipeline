@@ -92,8 +92,8 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
           domainName: [ process.env.DOMAIN_NAME ],
           domainOwner: [ process.env.DEVOPS_ACCOUNT ],
           repositoryName: [ process.env.REPO_NAME ],
-          packageName: "sharedcdkconstruct",
-          packageNamespace: "demos"
+          packageName: [ "sharedcdkconstruct" ],
+          packageNamespace: [ "demos" ]
         }
       }
     });
