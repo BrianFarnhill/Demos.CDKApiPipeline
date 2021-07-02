@@ -44,7 +44,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
         cloudAssemblyArtifact,
         installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} && npm install`,
         buildCommand: 'npm run build && npm test',
-        copyEnvironmentVariables: [ "DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME" ],
+        copyEnvironmentVariables: [ "DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT" ],
         rolePolicyStatements: [
           new iam.PolicyStatement({
             actions: [
