@@ -1,5 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as events from '@aws-cdk/aws-events';
+import * as events_targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import * as cdk from "@aws-cdk/core";
@@ -44,7 +46,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
         cloudAssemblyArtifact,
         installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} && npm install`,
         buildCommand: 'npm run build && npm test',
-        copyEnvironmentVariables: [ "DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT" ],
+        copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT"],
         rolePolicyStatements: [
           new iam.PolicyStatement({
             actions: [
@@ -67,7 +69,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
               `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:domain/${process.env.DOMAIN_NAME}`,
             ],
           }),
-          new iam.PolicyStatement({ actions: [ "sts:GetServiceBearerToken" ], resources: [ "*" ] }),
+          new iam.PolicyStatement({ actions: ["sts:GetServiceBearerToken"], resources: ["*"] }),
         ]
       }),
     });
@@ -79,5 +81,21 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
     pipeline.addApplicationStage(new PipelineStage(this, 'Prod', {
       env: { account: process.env.PROD_ACCOUNT, region: 'ap-southeast-2' }
     }));
+
+
+    // Auto trigger pipeline when new shared package is deployed
+    const packageUpdatedRule = new events.Rule(this, "CodeArtifactPublishes", {
+      eventPattern: {
+        source: ["aws.codeartifact"],
+        detailType: ["CodeArtifact Package Version State Change"],
+        detail: {
+          domainName: [ process.env.DOMAIN_NAME ],
+          domainOwner: [ process.env.DEVOPS_ACCOUNT ],
+          repositoryName: [ process.env.REPO_NAME ],
+          packageName: "@demos/sharedcdkconstruct",
+        }
+      }
+    });
+    packageUpdatedRule.addTarget(new events_targets.CodePipeline(pipeline.codePipeline));
   }
 }

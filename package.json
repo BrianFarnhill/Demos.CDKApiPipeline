@@ -25,6 +25,8 @@
     "@aws-cdk/aws-codedeploy": "1.110.1",
     "@aws-cdk/aws-codepipeline": "1.110.1",
     "@aws-cdk/aws-codepipeline-actions": "1.110.1",
+    "@aws-cdk/aws-events": "1.110.1",
+    "@aws-cdk/aws-events-targets": "1.110.1",
     "@aws-cdk/aws-iam": "1.110.1",
     "@aws-cdk/aws-lambda": "1.110.1",
     "@aws-cdk/aws-secretsmanager": "1.110.1",
