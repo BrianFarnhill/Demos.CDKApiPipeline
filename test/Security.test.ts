@@ -1,4 +1,5 @@
-import { expect as expectCDK, haveResourceLike, arrayWith, objectLike } from '@aws-cdk/assert';
+import { arrayWith, objectLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as DemosCdkApiPipeline from '../lib/MainStack';
 
@@ -28,22 +29,22 @@ describe("IAM tests", () => {
   describe("IAM mutation", () => {
       mutationPermissions.forEach((permission) => {
           test(`Does not have any IAM policy statements including ${permission}`, () => {
-              expectCDK(stack).notTo(haveResourceLike("AWS::IAM::Policy", {
+              expect(stack).not.toHaveResourceLike("AWS::IAM::Policy", {
                   PolicyDocument: {
                       Statement: arrayWith(objectLike({
                           Action: arrayWith(permission),
                           Effect: "Allow",
                       })),
                   }
-              }));
-              expectCDK(stack).notTo(haveResourceLike("AWS::IAM::Policy", {
+              });
+              expect(stack).not.toHaveResourceLike("AWS::IAM::Policy", {
                   PolicyDocument: {
                       Statement: arrayWith(objectLike({
                           Action: permission,
                           Effect: "Allow",
                       })),
                   }
-              }));
+              });
           });
       });
   });
