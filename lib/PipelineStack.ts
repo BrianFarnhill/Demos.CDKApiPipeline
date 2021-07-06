@@ -44,8 +44,12 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       synthAction: SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
-        installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} && npm install`,
-        buildCommand: 'npm run build && npm test',
+        installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
+        buildCommand: 'npm run build',
+        testCommands: [
+          "npm test",
+          "npm audit",
+        ],
         copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT"],
         rolePolicyStatements: [
           new iam.PolicyStatement({
@@ -83,8 +87,23 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
     }));
 
 
+    // Auto trigger the ppipeline every week to ensure fresh dependency builds are pulled in
+    const weeklyTrigger = new events.Rule(this, "WeeklyRelease", {
+      description: "Force each pipeline to run once a week to ensure fresh dependencies are included and audited",
+      enabled: true,
+      schedule: events.Schedule.cron({
+          minute: "0",
+          hour: "14",
+          month: "*",
+          weekDay: "SUN",
+          year: "*",
+      }),
+  });
+  weeklyTrigger.addTarget(new events_targets.CodePipeline(pipeline.codePipeline));
+
     // Auto trigger pipeline when new shared package is deployed
     const packageUpdatedRule = new events.Rule(this, "CodeArtifactPublishes", {
+      description: "Trigger the pipeline again when a specific package is updated",
       eventPattern: {
         source: ["aws.codeartifact"],
         detailType: ["CodeArtifact Package Version State Change"],

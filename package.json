@@ -34,5 +34,6 @@
     "@aws-cdk/pipelines": "1.110.1",
     "@demos/sharedcdkconstruct": "^1.0.0",
     "source-map-support": "^0.5.16"
-  }
+  },
+  "audit-level": "high"
 }
