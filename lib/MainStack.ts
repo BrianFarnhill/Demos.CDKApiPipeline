@@ -45,7 +45,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       resourceArn: `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${api.restApiId}/stages/_api`,
         webAclArn: acl.attrArn,
     });
-    association.node.addDependency(api.restApiId);
+    association.node.addDependency(api);
 
     new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
       application, 
