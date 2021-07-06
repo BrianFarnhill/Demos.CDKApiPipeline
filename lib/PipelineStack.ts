@@ -3,6 +3,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as events_targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import { Construct, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import * as cdk from "@aws-cdk/core";
 import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
@@ -50,7 +51,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
           "npm test",
           "npm audit",
         ],
-        copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT"],
+        copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT", "SLACK_ARN"],
         rolePolicyStatements: [
           new iam.PolicyStatement({
             actions: [
@@ -117,5 +118,18 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       }
     });
     packageUpdatedRule.addTarget(new events_targets.CodePipeline(pipeline.codePipeline));
-  }
+
+    if (process.env.SLACK_ARN !== undefined) {
+      new notifications.CfnNotificationRule(this, "FailedPipelineStageNotifications", {
+        name: "FailedPipelineActions",
+        resource: pipeline.codePipeline.pipelineArn,
+        detailType: 'FULL',
+        eventTypeIds: ['codepipeline-pipeline-action-execution-failed'],
+        targets: [{
+          targetAddress: process.env.SLACK_ARN,
+          targetType: 'AWSChatbotSlack'
+        }],
+      });
+    }
+  };
 }

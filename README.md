@@ -27,6 +27,8 @@ Before deploying this solution, you need the following:
    * One for the "production" account to run the workload from
 3. All three accounts should be [bootstrapped](https://docs.aws.amazon.com/cdk/latest/guide/cdk_pipeline.html#cdk_pipeline_bootstrap)
    to run AWS CDK projects
+4. Optional - Create an [AWS Chatbot](https://docs.aws.amazon.com/chatbot/latest/adminguide/setting-up.html)
+   Slack channel to be notification of pipeline actions that fail
 
 ### Update your source repo
 
@@ -47,6 +49,7 @@ export DEV_ACCOUNT=[AWS Account ID that is the dev workload account]
 export PROD_ACCOUNT=[AWS Account ID that is the production workload account]
 export DOMAIN_NAME=[Your CodeArtifact domain name]
 export REPO_NAME=[Your CodeArtifact repository name]
+export SLACK_ARN=[ARN of the AWS Chatbot notification channel for failed actions - OPTIONAL]
 ```
 
 ### Deploying the pipeline
