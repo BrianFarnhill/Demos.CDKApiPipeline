@@ -31,7 +31,7 @@
     "@aws-cdk/aws-iam": "1.110.1",
     "@aws-cdk/aws-lambda": "1.110.1",
     "@aws-cdk/aws-secretsmanager": "1.110.1",
-    "@aws-cdk/aws-wafv2": "^1.110.1",
+    "@aws-cdk/aws-wafv2": "1.110.1",
     "@aws-cdk/core": "1.110.1",
     "@aws-cdk/pipelines": "1.110.1",
     "@demos/sharedcdkconstruct": "^1.0.0",
