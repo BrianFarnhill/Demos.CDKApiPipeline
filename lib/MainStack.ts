@@ -30,7 +30,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       handler: versionAlias
     });
 
-    const acl = new waf.CfnWebACL(scope, "APIACL", {
+    const acl = new waf.CfnWebACL(this, "APIACL", {
       defaultAction: { allow: {} },
       scope: "REGIONAL",
       rules,
