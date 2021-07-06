@@ -1,6 +1,10 @@
 {
     "files.exclude": {
-        "**/*.d.ts": true,
-        "**/*.js": true
+        "lib/*.d.ts": true,
+        "lib/*.js": true,
+        "bin/*.d.ts": true,
+        "bin/*.js": true,
+        "test/*.d.ts": true,
+        "test/*.js": true
     }
 }

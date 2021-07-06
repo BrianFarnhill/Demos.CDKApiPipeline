@@ -3,8 +3,10 @@ import * as apigw from '@aws-cdk/aws-apigateway';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as waf from '@aws-cdk/aws-wafv2';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
+import * as synth from '@aws-cdk/aws-synthetics';
 import * as democonstruct from "@demos/sharedcdkconstruct";
 import rules from "./ApiRules";
+import * as path from "path";
 
 export class DemosCdkApiPipelineStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -18,7 +20,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
     const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplication', {
       applicationName: 'DemoLambdaApp', // optional property
     });
-    
+
     const versionAlias = new lambda.Alias(this, 'alias', {
       aliasName: 'prod',
       version: demoFunciton.LambdaFunction.currentVersion,
@@ -47,8 +49,21 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
     });
     association.node.addDependency(api);
 
+    new synth.Canary(this, "WafSynethetics", {
+      runtime: synth.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+      test: synth.Test.custom({
+        code: synth.Code.fromAsset(path.resolve(__dirname, "../canaries/waf")),
+        handler: "index.handler",
+      }),
+      schedule: synth.Schedule.rate(cdk.Duration.minutes(5)),
+      startAfterCreation: true,
+      environmentVariables: {
+        CANARY_HOSTNAME: `${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`,
+      }
+    });
+
     new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
-      application, 
+      application,
       alias: versionAlias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
     });
