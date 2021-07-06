@@ -102,6 +102,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
           evaluationPeriods: 1,
           metric: canary.metricFailed(),
           threshold: 1,
+          treatMissingData: cw.TreatMissingData.NOT_BREACHING,
         }),
       ],
     });
