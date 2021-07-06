@@ -1,9 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '@aws-cdk/aws-apigateway';
-import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as waf from '@aws-cdk/aws-wafv2';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as democonstruct from "@demos/sharedcdkconstruct";
+import rules from "./ApiRules";
 
 export class DemosCdkApiPipelineStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -18,17 +19,33 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       applicationName: 'DemoLambdaApp', // optional property
     });
     
-
     const versionAlias = new lambda.Alias(this, 'alias', {
       aliasName: 'prod',
       version: demoFunciton.LambdaFunction.currentVersion,
     });
 
     // An API Gateway to make the Lambda web-accessible
-    new apigw.LambdaRestApi(this, 'Gateway', {
+    const api = new apigw.LambdaRestApi(this, 'Gateway', {
       description: 'Endpoint for a simple Lambda-powered web service',
       handler: versionAlias
     });
+
+    const acl = new waf.CfnWebACL(scope, "APIACL", {
+      defaultAction: { allow: {} },
+      scope: "REGIONAL",
+      rules,
+      visibilityConfig: {
+        cloudWatchMetricsEnabled: true,
+        metricName: "waf",
+        sampledRequestsEnabled: true,
+      },
+    });
+
+    const association = new waf.CfnWebACLAssociation(this, "ApiWafAssociation", {
+      resourceArn: `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${api.restApiId}/stages/_api`,
+        webAclArn: acl.attrArn,
+    });
+    association.node.addDependency(api.restApiId);
 
     new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
       application, 
