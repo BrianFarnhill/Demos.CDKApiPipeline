@@ -42,8 +42,8 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
     });
 
     const association = new waf.CfnWebACLAssociation(this, "ApiWafAssociation", {
-      resourceArn: `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${api.restApiId}/stages/_api`,
-        webAclArn: acl.attrArn,
+      resourceArn: `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}::/restapis/${api.restApiId}/stages/prod`,
+      webAclArn: acl.attrArn,
     });
     association.node.addDependency(api);
 
