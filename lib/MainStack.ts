@@ -78,6 +78,20 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       application,
       alias: versionAlias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
+      alarms: [
+        new cw.Alarm(this, "MainLambdaErrorAlarm", {
+          evaluationPeriods: 1,
+          metric: versionAlias.metricErrors(),
+          threshold: 1,
+          treatMissingData: cw.TreatMissingData.NOT_BREACHING,
+        }),
+        new cw.Alarm(this, "MainLambdaLatencyAlarm", {
+          evaluationPeriods: 1,
+          metric: versionAlias.metricDuration(),
+          threshold: 5000,
+          treatMissingData: cw.TreatMissingData.NOT_BREACHING,
+        }),
+      ]
     });
 
 
