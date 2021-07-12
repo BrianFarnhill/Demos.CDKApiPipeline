@@ -47,7 +47,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
     });
 
     // CW DASHBOARD
-
+    
     new cw.Dashboard(this, "WAFMonitoring", {
       dashboardName: "LambdaAPI-WafMetrics",
       widgets: [
@@ -56,7 +56,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
             height: 6, 
             width: 18, 
             left: [ new cw.Metric({ metricName: "BlockedRequests", namespace: "AWS/WAFV2", dimensionsMap: {
-              WebACL: acl.attrId,
+              WebACL: cdk.Fn.select(0, cdk.Fn.split("|", acl.ref)),
               Region: cdk.Aws.REGION,
               Rule: "ALL",
             }}),
@@ -67,7 +67,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
             height: 6, 
             width: 18, 
             left: [ new cw.Metric({ metricName: "AllowedRequests", namespace: "AWS/WAFV2", dimensionsMap: {
-              WebACL: acl.attrId,
+              WebACL: cdk.Fn.select(0, cdk.Fn.split("|", acl.ref)),
               Region: cdk.Aws.REGION,
               Rule: "ALL",
             }}),
