@@ -124,8 +124,5 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
       alarms: [ wafSyntheticAlarm ],
     });
-
-
-
   }
 }

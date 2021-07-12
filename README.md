@@ -50,6 +50,7 @@ export PROD_ACCOUNT=[AWS Account ID that is the production workload account]
 export DOMAIN_NAME=[Your CodeArtifact domain name]
 export REPO_NAME=[Your CodeArtifact repository name]
 export SLACK_ARN=[ARN of the AWS Chatbot notification channel for failed actions - OPTIONAL]
+export SLACK_SNS_ARN=[ARN of the SNS topic used by the above Slack Chatbot - for incident manager - OPTIONAL]
 ```
 
 ### Deploying the pipeline
