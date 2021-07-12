@@ -62,7 +62,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
         code: synth.Code.fromAsset(path.resolve(__dirname, "../canaries/waf")),
         handler: "index.handler",
       }),
-      schedule: synth.Schedule.rate(cdk.Duration.minutes(5)),
+      schedule: synth.Schedule.rate(cdk.Duration.minutes(1)),
       startAfterCreation: true,
       environmentVariables: {
         CANARY_HOSTNAME: `${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`,
