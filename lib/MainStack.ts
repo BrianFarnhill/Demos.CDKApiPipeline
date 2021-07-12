@@ -49,7 +49,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
     // CW DASHBOARD
 
     new cw.Dashboard(this, "WAFMonitoring", {
-      dashboardName: "Lambda API - WAF metrics",
+      dashboardName: "LambdaAPI-WafMetrics",
       widgets: [
         [
           new cw.GraphWidget({ 
