@@ -8,6 +8,7 @@ import * as cw from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as democonstruct from "@demos/sharedcdkconstruct";
 import rules from "./ApiRules";
+import IncidentPlan from './IncidentPlan';
 import * as path from "path";
 
 export class DemosCdkApiPipelineStack extends cdk.Stack {
@@ -108,19 +109,23 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       version: stubLambda.currentVersion,
     });
 
+    const wafSyntheticAlarm = new cw.Alarm(this, "SyntheticsFailureAlarm", {
+      evaluationPeriods: 1,
+      metric: canary.metricFailed(),
+      threshold: 1,
+      treatMissingData: cw.TreatMissingData.NOT_BREACHING,
+    });
+
+    IncidentPlan(this, wafSyntheticAlarm);
+
     new codedeploy.LambdaDeploymentGroup(this, 'StackDeployment', {
       application,
       alias: stubAlias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
-      alarms: [
-        new cw.Alarm(this, "SyntheticsFailureAlarm", {
-          evaluationPeriods: 1,
-          metric: canary.metricFailed(),
-          threshold: 1,
-          treatMissingData: cw.TreatMissingData.NOT_BREACHING,
-        }),
-      ],
+      alarms: [ wafSyntheticAlarm ],
     });
+
+
 
   }
 }
