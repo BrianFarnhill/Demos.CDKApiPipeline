@@ -51,7 +51,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
           "npm test",
           "npm audit",
         ],
-        copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT", "SLACK_ARN", "SLACK_SNS_ARN"],
+        copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT", "SLACK_ARN", "SLACK_SNS_TOPIC_NAME"],
         rolePolicyStatements: [
           new iam.PolicyStatement({
             actions: [

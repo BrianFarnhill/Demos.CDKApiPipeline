@@ -4,9 +4,9 @@ import * as cw from "@aws-cdk/aws-cloudwatch";
 
 export default function(scope: cdk.Construct, wafAlarm: cw.Alarm) {
 
-    const chatChannel = process.env.SLACK_SNS_ARN ? {
+    const chatChannel = process.env.SLACK_SNS_TOPIC_NAME ? {
         chatbotSns: [
-            process.env.SLACK_SNS_ARN,
+            `arn:aws:sns:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:${process.env.SLACK_SNS_TOPIC_NAME}`,
         ]
     } : undefined;
 
