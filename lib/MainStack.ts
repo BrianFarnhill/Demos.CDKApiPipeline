@@ -5,6 +5,7 @@ import * as waf from '@aws-cdk/aws-wafv2';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as synth from '@aws-cdk/aws-synthetics';
 import * as cw from '@aws-cdk/aws-cloudwatch';
+import * as iam from '@aws-cdk/aws-iam';
 import * as democonstruct from "@demos/sharedcdkconstruct";
 import rules from "./ApiRules";
 import * as path from "path";
