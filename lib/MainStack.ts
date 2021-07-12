@@ -30,7 +30,6 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
 
     // API GATEWAY
 
-
     const api = new apigw.LambdaRestApi(this, 'Gateway', {
       description: 'Endpoint for a simple Lambda-powered web service',
       handler: versionAlias
@@ -46,6 +45,36 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
         sampledRequestsEnabled: true,
       },
     });
+
+    // CW DASHBOARD
+
+    new cw.Dashboard(this, "WAFMonitoring", {
+      dashboardName: "Lambda API - WAF metrics",
+      widgets: [
+        [
+          new cw.GraphWidget({ 
+            height: 6, 
+            width: 18, 
+            left: [ new cw.Metric({ metricName: "BlockedRequests", namespace: "AWS/WAFV2", dimensionsMap: {
+              WebACL: acl.attrId,
+              Region: cdk.Aws.REGION,
+              Rule: "ALL",
+            }}),
+          ]}),
+        ],
+        [
+          new cw.GraphWidget({ 
+            height: 6, 
+            width: 18, 
+            left: [ new cw.Metric({ metricName: "AllowedRequests", namespace: "AWS/WAFV2", dimensionsMap: {
+              WebACL: acl.attrId,
+              Region: cdk.Aws.REGION,
+              Rule: "ALL",
+            }}),
+          ]}),
+        ],
+      ],
+    })
 
 
     // CANARY
