@@ -11,7 +11,7 @@ export default [
         }
       },
       overrideAction: {
-        none: {}
+        count: {}
       },
       visibilityConfig: {
         sampledRequestsEnabled: true,
@@ -29,7 +29,7 @@ export default [
         }
       },
       overrideAction: {
-        none: {}
+        count: {}
       },
       visibilityConfig: {
         sampledRequestsEnabled: true,
