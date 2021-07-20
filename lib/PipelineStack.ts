@@ -163,6 +163,17 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
           targetType: 'AWSChatbotSlack'
         }],
       });
+
+      new notifications.CfnNotificationRule(this, "FailedCIBuildNotifications", {
+        name: "FailedCIBuilds",
+        resource: ciBuild.projectArn,
+        detailType: 'FULL',
+        eventTypeIds: ['codebuild-project-build-state-failed'],
+        targets: [{
+          targetAddress: process.env.SLACK_ARN,
+          targetType: 'AWSChatbotSlack'
+        }],
+      });
     }
   };
 }
