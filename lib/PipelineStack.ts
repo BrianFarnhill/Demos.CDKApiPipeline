@@ -93,7 +93,11 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
         DOMAIN_NAME: { value: process.env.DOMAIN_NAME },
         DEVOPS_ACCOUNT: { value: process.env.DEVOPS_ACCOUNT },
       },
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+      },
     });
+    
     codeArtifactPolicyStatements.forEach((policy) => {
       ciBuild.addToRolePolicy(policy);
     });
