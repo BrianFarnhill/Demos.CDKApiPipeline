@@ -1,3 +1,4 @@
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
@@ -31,14 +32,46 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
     const sourceArtifact = new codepipeline.Artifact();
     const cloudAssemblyArtifact = new codepipeline.Artifact();
 
+    const repoProps = {
+      owner: "BrianFarnhill",
+      repo: "Demos.CDKApiPipeline",
+    };
+
+
+    const ciBuild = new codebuild.Project(this, "CIBuild", {
+      source: codebuild.Source.gitHub({
+        ...repoProps,
+        webhook: true,
+      }),
+      buildSpec: codebuild.BuildSpec.fromObject({
+        version: "0.2",
+        phases: {
+          install: {
+            commands: [
+              `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
+            ],
+          },
+          build: {
+            commands: [
+              "npm run build",
+            ],
+          },
+          post_build: {
+            commands: [
+              "npm test",
+            ]
+          }
+        }
+      })
+    });
+
     const pipeline = new CdkPipeline(this, 'Pipeline', {
       pipelineName: 'LambdaDeployDemo-Pipeline',
       cloudAssemblyArtifact,
       sourceAction: new codepipeline_actions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        owner: "BrianFarnhill",
-        repo: "Demos.CDKApiPipeline",
+        ...repoProps,
         oauthToken: cdk.SecretValue.secretsManager("GitHubToken"),
         branch: "main",
       }),
