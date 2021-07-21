@@ -183,7 +183,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
         name: "FailedCIBuilds",
         resource: ciBuild.projectArn,
         detailType: 'FULL',
-        eventTypeIds: ['codebuild-project-build-state-failed'],
+        eventTypeIds: ['codebuild-project-build-state-failed', 'codebuild-project-build-state-succeeded'],
         targets: [{
           targetAddress: process.env.SLACK_ARN,
           targetType: 'AWSChatbotSlack'
