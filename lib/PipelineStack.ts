@@ -37,6 +37,31 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       repo: "Demos.CDKApiPipeline",
     };
 
+    const codeArtifactPolicyStatements = [
+      new iam.PolicyStatement({
+        actions: [
+          "codeartifact:Get*",
+          "codeartifact:List*",
+          "codeartifact:Describe*",
+          "codeartifact:ReadFromRepository",
+        ],
+        resources: [
+          `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}`,
+          `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}`,
+          `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}/*/*/*`,
+        ],
+      }),
+      new iam.PolicyStatement({
+        actions: [
+          "codeartifact:GetAuthorizationToken",
+        ],
+        resources: [
+          `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:domain/${process.env.DOMAIN_NAME}`,
+        ],
+      }),
+      new iam.PolicyStatement({ actions: ["sts:GetServiceBearerToken"], resources: ["*"] }),
+    ];
+
 
     const ciBuild = new codebuild.Project(this, "CIBuild", {
       source: codebuild.Source.gitHub({
@@ -62,8 +87,21 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
             ]
           }
         }
-      })
+      }),
+      environmentVariables: {
+        REPO_NAME: { value: process.env.REPO_NAME },
+        DOMAIN_NAME: { value: process.env.DOMAIN_NAME },
+        DEVOPS_ACCOUNT: { value: process.env.DEVOPS_ACCOUNT },
+      },
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+      },
     });
+    
+    codeArtifactPolicyStatements.forEach((policy) => {
+      ciBuild.addToRolePolicy(policy);
+    });
+    
 
     const pipeline = new CdkPipeline(this, 'Pipeline', {
       pipelineName: 'LambdaDeployDemo-Pipeline',
@@ -85,30 +123,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
           "npm audit",
         ],
         copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT", "SLACK_ARN", "SLACK_SNS_TOPIC_NAME"],
-        rolePolicyStatements: [
-          new iam.PolicyStatement({
-            actions: [
-              "codeartifact:Get*",
-              "codeartifact:List*",
-              "codeartifact:Describe*",
-              "codeartifact:ReadFromRepository",
-            ],
-            resources: [
-              `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}`,
-              `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}`,
-              `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}/*/*/*`,
-            ],
-          }),
-          new iam.PolicyStatement({
-            actions: [
-              "codeartifact:GetAuthorizationToken",
-            ],
-            resources: [
-              `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:domain/${process.env.DOMAIN_NAME}`,
-            ],
-          }),
-          new iam.PolicyStatement({ actions: ["sts:GetServiceBearerToken"], resources: ["*"] }),
-        ]
+        rolePolicyStatements: codeArtifactPolicyStatements,
       }),
     });
 

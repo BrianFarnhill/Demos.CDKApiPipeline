@@ -23,7 +23,7 @@
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.110.1",
     "@aws-cdk/aws-cloudwatch": "1.110.1",
-    "@aws-cdk/aws-codebuild": "^1.110.1",
+    "@aws-cdk/aws-codebuild": "1.110.1",
     "@aws-cdk/aws-codedeploy": "1.110.1",
     "@aws-cdk/aws-codepipeline": "1.110.1",
     "@aws-cdk/aws-codepipeline-actions": "1.110.1",
