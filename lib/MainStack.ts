@@ -20,7 +20,7 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
     const demoFunciton = new democonstruct.DemoFunction(this, "DemoFunction", {});
 
     // Uncomment this line to cause the security tests to fail
-    //demoFunciton.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
+    demoFunciton.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
 
     const versionAlias = new lambda.Alias(this, 'alias', {
       aliasName: 'prod',
@@ -97,8 +97,6 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
         CANARY_HOSTNAME: `${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`,
       }
     });
-
-    // pointless change
 
     // CODE DEPLOY FOR API GATEWAY
 
