@@ -44,7 +44,7 @@ export default [
       statement: {
         rateBasedStatement: {
           aggregateKeyType: "IP",
-          limit: 110,
+          limit: 500,
         },
       },
       visibilityConfig: {
