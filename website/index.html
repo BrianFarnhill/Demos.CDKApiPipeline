@@ -1,13 +1,60 @@
-<html>
+<!doctype html>
+<html lang="en">
 
-    <head>
-        <title></title>
-    </head>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <body>
-        <h1>Brian's demo app home page</h1>
+    <script type="text/javascript">
 
-        <p>This is where I'll do something useful and better looking than this bare HTML - but that comes later.</p>
-    </body>
+        function ToggleLambdas() {
+            if ($("#LambdaButton").hasClass("btn-success") === true) {
+                $("#LambdaButton").removeClass("btn-success").addClass("btn-danger").text("Stop");
+            } else {
+                $("#LambdaButton").removeClass("btn-danger").addClass("btn-success").text("Start");
+            }
+
+            $.ajax({
+                url: "/prod"
+            }).done((data) => {
+                console.log(data)
+            }).fail((er) => {
+                console.error(er.status + " (" + er.statusText + ")")
+            })
+        }
+
+    </script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <title>Brian's demo app</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Brian's demo app</h1>
+
+                <p>This page will make requests to the example lambda API and can be used to see how the blue/green
+                    deployment works.</p>
+
+                <button type="button" id="LambdaButton" class="btn btn-success"
+                    onclick="ToggleLambdas();">Start</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"
+        integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+</body>
 
 </html>

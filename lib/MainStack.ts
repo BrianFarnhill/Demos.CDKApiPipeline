@@ -141,12 +141,16 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       }
     });
     const distro = new cloudfront.Distribution(this, "DemoSite", {
-      defaultBehavior: { origin: new cforigins.S3Origin(sitebucket) },
+      defaultBehavior: { 
+        origin: new cforigins.S3Origin(sitebucket),
+      },
       additionalBehaviors: {
         "/prod": {
           origin: new cforigins.HttpOrigin(`${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`),
-        }
-      }
+          cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+        },
+      },
+      defaultRootObject: "index.html",
     });
     new s3deploy.BucketDeployment(this, "SiteDeploy", {
       destinationBucket: sitebucket,
