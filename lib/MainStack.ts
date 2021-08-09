@@ -132,21 +132,28 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
 
     // FRONT END APP
 
-    const sitebucket = new s3.Bucket(this, "SiteBucket");
+    const sitebucket = new s3.Bucket(this, "SiteBucket", {
+      blockPublicAccess: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true,
+      }
+    });
+    const distro = new cloudfront.Distribution(this, "DemoSite", {
+      defaultBehavior: { origin: new cforigins.S3Origin(sitebucket) },
+      additionalBehaviors: {
+        "/prod": {
+          origin: new cforigins.HttpOrigin(`${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`),
+        }
+      }
+    });
     new s3deploy.BucketDeployment(this, "SiteDeploy", {
       destinationBucket: sitebucket,
       sources: [
         s3deploy.Source.asset(path.resolve(__dirname, "../website")),
       ],
-    });
-    
-    new cloudfront.Distribution(this, "DemoSite", {
-      defaultBehavior: { origin: new cforigins.S3Origin(sitebucket) },
-      additionalBehaviors: {
-        "/prod": {
-          origin: new cforigins.HttpOrigin(api.url),
-        }
-      }
+      distribution: distro,
     });
 
     // CODE DEPLOY STUB FOR STACK DEPLOYMENT
