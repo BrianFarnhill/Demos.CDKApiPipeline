@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.110.1",
+    "@aws-cdk/aws-cloudfront": "1.110.1",
+    "@aws-cdk/aws-cloudfront-origins": "^1.110.1",
     "@aws-cdk/aws-cloudwatch": "1.110.1",
     "@aws-cdk/aws-codebuild": "1.110.1",
     "@aws-cdk/aws-codedeploy": "1.110.1",
@@ -32,6 +34,8 @@
     "@aws-cdk/aws-events-targets": "1.110.1",
     "@aws-cdk/aws-iam": "1.110.1",
     "@aws-cdk/aws-lambda": "1.110.1",
+    "@aws-cdk/aws-s3": "1.110.1",
+    "@aws-cdk/aws-s3-deployment": "1.110.1",
     "@aws-cdk/aws-secretsmanager": "1.110.1",
     "@aws-cdk/aws-ssmincidents": "1.110.1",
     "@aws-cdk/aws-synthetics": "1.110.1",

@@ -5,8 +5,12 @@ import * as waf from '@aws-cdk/aws-wafv2';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as synth from '@aws-cdk/aws-synthetics';
 import * as cw from '@aws-cdk/aws-cloudwatch';
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as cforigins from '@aws-cdk/aws-cloudfront-origins';
 import * as iam from '@aws-cdk/aws-iam';
 import * as democonstruct from "@demos/sharedcdkconstruct";
+import * as s3 from "@aws-cdk/aws-s3";
+import * as s3deploy from "@aws-cdk/aws-s3-deployment";
 import rules from "./ApiRules";
 import IncidentPlan from './IncidentPlan';
 import * as path from "path";
@@ -125,6 +129,25 @@ export class DemosCdkApiPipelineStack extends cdk.Stack {
       ]
     });
 
+
+    // FRONT END APP
+
+    const sitebucket = new s3.Bucket(this, "SiteBucket");
+    new s3deploy.BucketDeployment(this, "SiteDeploy", {
+      destinationBucket: sitebucket,
+      sources: [
+        s3deploy.Source.asset(path.resolve(__dirname, "../website")),
+      ],
+    });
+    
+    new cloudfront.Distribution(this, "DemoSite", {
+      defaultBehavior: { origin: new cforigins.S3Origin(sitebucket) },
+      additionalBehaviors: {
+        "/prod": {
+          origin: new cforigins.HttpOrigin(api.url),
+        }
+      }
+    });
 
     // CODE DEPLOY STUB FOR STACK DEPLOYMENT
     const stubLambda = new lambda.Function(this, "StackDeployStub", {
