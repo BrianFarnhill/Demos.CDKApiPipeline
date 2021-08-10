@@ -6,22 +6,117 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.0/chart.js"
+        integrity="sha512-XcsV/45eM/syxTudkE8AoKK1OfxTrlFpOltc9NmHXh3HF+0ZA917G9iG6Fm7B6AzP+UeEzV8pLwnbRNPxdUpfA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script type="text/javascript">
+
+        var intervalId;
+        var chart;
+        var labels = []; // string array of labels, will be each minute of time
+        var data = [];
+        var datasets = []; // object array that has the specific for each minutes values - see https://www.chartjs.org/docs/latest/samples/bar/vertical.html
+
+        const CHART_COLORS = {
+            blue: {
+                background: 'rgb(54, 162, 235, 0.5)',
+                border: 'rgb(54, 162, 235)'
+            },
+            green: {
+                background: 'rgb(75, 192, 192, 0.5)',
+                border: 'rgb(75, 192, 192)'
+            },
+            red: {
+                background: 'rgb(255, 99, 132, 0.5)',
+                border: 'rgb(255, 99, 132)'
+            },
+            orange: {
+                background: 'rgb(255, 159, 64, 0.5)',
+                border: 'rgb(255, 159, 64)'
+            },
+            yellow: {
+                background: 'rgb(255, 205, 86, 0.5)',
+                border: 'rgb(255, 205, 86)'
+            },
+            purple: {
+                background: 'rgb(153, 102, 255, 0.5)',
+                border: 'rgb(153, 102, 255)'
+            },
+            grey: {
+                background: 'rgb(201, 203, 207, 0.5)',
+                border: 'rgb(201, 203, 207)'
+            },
+        };
+
+        const NAMED_COLORS = [
+            CHART_COLORS.blue,
+            CHART_COLORS.green,
+            CHART_COLORS.red,
+            CHART_COLORS.orange,
+            CHART_COLORS.yellow,
+            CHART_COLORS.purple,
+            CHART_COLORS.grey,
+        ];
+
+        function RefreshChart() {
+            chart.data = {
+                labels: labels,
+                datasets: datasets,
+            }
+            chart.update();
+        }
+
+        function AddResult(message) {
+            var currentDate = new Date(Date.now());
+            var currentTime = currentDate.getHours().toString() + ":" + currentDate.getMinutes().toString();
+
+            if (data.findIndex((value) => value.x === currentTime) < 0) {
+                labels.push(currentTime);
+                data.push({
+                    x: currentTime,
+                });
+            }
+            var currentData = data.find((value) => value.x === currentTime);
+            if (currentData[message] === undefined) {
+                currentData[message] = 1;
+            } else {
+                currentData[message] += 1;
+            }
+
+            if (datasets.findIndex((value) => value.label === message) < 0) {
+                datasets.push({
+                    label: message,
+                    data: data,
+                    borderColor: NAMED_COLORS[datasets.length].border,
+                    backgroundColor: NAMED_COLORS[datasets.length].background,
+                    parsing: {
+                        yAxisKey: message,
+                    },
+                });
+            }
+
+            RefreshChart();
+        }
 
         function ToggleLambdas() {
             if ($("#LambdaButton").hasClass("btn-success") === true) {
                 $("#LambdaButton").removeClass("btn-success").addClass("btn-danger").text("Stop");
+                intervalId = setInterval(() => {
+                    $.ajax({
+                        url: "/prod"
+                    }).done((data) => {
+                        AddResult(data.message)
+                    }).fail((er) => {
+                        console.error(er.status + " (" + er.statusText + ")")
+                    });
+                }, 1000);
             } else {
                 $("#LambdaButton").removeClass("btn-danger").addClass("btn-success").text("Start");
+                clearInterval(intervalId);
             }
 
-            $.ajax({
-                url: "/prod"
-            }).done((data) => {
-                console.log(data)
-            }).fail((er) => {
-                console.error(er.status + " (" + er.statusText + ")")
-            })
+
         }
 
     </script>
@@ -44,6 +139,12 @@
 
                 <button type="button" id="LambdaButton" class="btn btn-success"
                     onclick="ToggleLambdas();">Start</button>
+
+                <div style="height: 300px">
+                    <canvas id="myChart"></canvas>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -55,6 +156,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
         crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        var ctx = document.getElementById('myChart');
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Messages received from API Gateway'
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
