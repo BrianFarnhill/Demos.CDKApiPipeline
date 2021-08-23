@@ -86,7 +86,6 @@ export default class extends Construct {
         association.node.addDependency(props.ApiGateway);
 
         new cw.Dashboard(this, "WAFMonitoring", {
-            dashboardName: "LambdaAPI-WafMetrics",
             widgets: [
                 [
                     new cw.GraphWidget({
