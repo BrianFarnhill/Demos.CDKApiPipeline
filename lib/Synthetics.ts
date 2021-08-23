@@ -72,7 +72,7 @@ export default class extends Construct {
                 handler: "index.handler",
             },
             executionRoleArn: synthRole.roleArn,
-            name: "WAFSyntheticTest",
+            name: "waf-api-synthetic",
             runtimeVersion: "syn-nodejs-puppeteer-3.2",
             schedule: {
                 expression: "rate(1 minute)",
