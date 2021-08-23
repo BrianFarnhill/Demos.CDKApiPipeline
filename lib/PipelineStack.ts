@@ -1,22 +1,24 @@
-import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import * as events from '@aws-cdk/aws-events';
-import * as events_targets from '@aws-cdk/aws-events-targets';
-import * as iam from '@aws-cdk/aws-iam';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
-import { Construct, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
-import * as cdk from "@aws-cdk/core";
-import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
+import * as cdk from "aws-cdk-lib";
+import {
+  aws_codebuild as codebuild,
+  aws_codepipeline as codepipeline,
+  aws_codepipeline_actions as codepipeline_actions,
+  aws_events as events,
+  aws_events_targets as events_targets,
+  aws_iam as iam,
+  aws_codestarnotifications as notifications,
+  pipelines as pipelines,
+} from "aws-cdk-lib";
+import { Construct } from 'constructs';
 import { DemosCdkApiPipelineStack } from './MainStack';
 
 
 /**
  * Deployable unit of API application
  */
-class PipelineStage extends Stage {
+class PipelineStage extends cdk.Stage {
 
-  constructor(scope: Construct, id: string, props?: StageProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StageProps) {
     super(scope, id, props);
     new DemosCdkApiPipelineStack(this, 'LambdaDeployDemo');
   }
@@ -25,8 +27,8 @@ class PipelineStage extends Stage {
 /**
  * The stack that defines the application pipeline
  */
-export class CdkpipelinesDemoPipelineStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const sourceArtifact = new codepipeline.Artifact();
@@ -103,7 +105,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
     });
     
 
-    const pipeline = new CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       pipelineName: 'LambdaDeployDemo-Pipeline',
       cloudAssemblyArtifact,
       sourceAction: new codepipeline_actions.GitHubSourceAction({
@@ -113,7 +115,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
         oauthToken: cdk.SecretValue.secretsManager("GitHubToken"),
         branch: "main",
       }),
-      synthAction: SimpleSynthAction.standardNpmSynth({
+      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
         installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
