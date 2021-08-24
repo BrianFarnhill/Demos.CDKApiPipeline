@@ -21,7 +21,7 @@ export default class extends Construct {
         //demoFunciton.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
 
         const versionAlias = new lambda.Alias(this, 'alias', {
-            aliasName: 'prod',
+            aliasName: 'live',
             version: demoFunciton.LambdaFunction.currentVersion,
         });
 
