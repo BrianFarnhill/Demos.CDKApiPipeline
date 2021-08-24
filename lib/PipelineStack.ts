@@ -65,11 +65,11 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
     });
 
     pipeline.addApplicationStage(new PipelineStage(this, 'PreProd', {
-      env: { account: process.env.DEV_ACCOUNT, region: 'ap-southeast-2' }
+      env: { account: process.env.DEV_ACCOUNT, region: process.env.AWS_REGION }
     }));
 
     pipeline.addApplicationStage(new PipelineStage(this, 'Prod', {
-      env: { account: process.env.PROD_ACCOUNT, region: 'ap-southeast-2' }
+      env: { account: process.env.PROD_ACCOUNT, region: process.env.AWS_REGION }
     }));
 
 

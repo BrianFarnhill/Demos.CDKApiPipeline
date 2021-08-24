@@ -6,14 +6,14 @@ export default [
     new iam.PolicyStatement({
         actions: ["codeartifact:Get*", "codeartifact:List*", "codeartifact:Describe*", "codeartifact:ReadFromRepository"],
         resources: [
-            `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}`,
-            `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}`,
-            `arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}/*/*/*`,
+            `arn:aws:codeartifact:${process.env.AWS_REGION}:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}`,
+            `arn:aws:codeartifact:${process.env.AWS_REGION}:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}`,
+            `arn:aws:codeartifact:${process.env.AWS_REGION}:${process.env.DEVOPS_ACCOUNT}:repository/${process.env.DOMAIN_NAME}/${process.env.REPO_NAME}/*/*/*`,
         ],
     }),
     new iam.PolicyStatement({
         actions: ["codeartifact:GetAuthorizationToken"],
-        resources: [`arn:aws:codeartifact:ap-southeast-2:${process.env.DEVOPS_ACCOUNT}:domain/${process.env.DOMAIN_NAME}`],
+        resources: [`arn:aws:codeartifact:${process.env.AWS_REGION}:${process.env.DEVOPS_ACCOUNT}:domain/${process.env.DOMAIN_NAME}`],
     }),
     new iam.PolicyStatement({ actions: ["sts:GetServiceBearerToken"], resources: ["*"] }),
 ];

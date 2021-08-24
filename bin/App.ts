@@ -8,5 +8,5 @@ const app = new cdk.App();
 new DemosCdkApiPipelineStack(app, 'MainStack', {});
 
 new CdkpipelinesDemoPipelineStack(app, 'PipelineStack', {
-  env: { account: process.env.DEVOPS_ACCOUNT, region: 'ap-southeast-2' },
+  env: { account: process.env.DEVOPS_ACCOUNT, region: process.env.AWS_REGION },
 });
