@@ -11,7 +11,7 @@ describe('REST API Test', () => {
     const assert = Template.fromJSON(app.synth().getStackArtifact(stack.artifactId).template);
 
     test('REST API Endpoint == 1', () => {
-        assert.resourceCountIs('AWS::ApiGateway::RestApi', 1)
+        assert.resourceCountIs('AWS::ApiGateway::RestApi', 1);
     });
     
     test('Check if CodeDeploy for Lambda exist', ()=> {
