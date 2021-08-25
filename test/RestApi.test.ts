@@ -21,5 +21,11 @@ describe('REST API Test', () => {
             }
         });
     });
+    
+    test('Validate CodeDeploy Deployment Config', () => {
+       assert.hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+           DeploymentConfigName: 'CodeDeployDefault.LambdaLinear10PercentEvery1Minute'
+       }) 
+    });
 }); 
 
