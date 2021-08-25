@@ -20,7 +20,7 @@ export default class extends Construct {
         // Uncomment this line to cause the security tests to fail
         //demoFunciton.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
 
-        const versionAlias = new lambda.Alias(this, 'alias', {
+        const versionAlias = new lambda.Alias(this, 'DemoFunctionAlias', {
             aliasName: 'live',
             version: demoFunciton.LambdaFunction.currentVersion,
         });
