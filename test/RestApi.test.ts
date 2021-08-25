@@ -1,7 +1,6 @@
-import { Template, Match } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as MainStack from '../lib/MainStack';
-import * as RestApi from '../lib/RestApi';
 
 describe('REST API Test', () => {
 
