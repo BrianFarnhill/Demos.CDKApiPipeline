@@ -25,7 +25,13 @@ describe('REST API Test', () => {
     test('Validate CodeDeploy Deployment Config', () => {
        assert.hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
            DeploymentConfigName: 'CodeDeployDefault.LambdaLinear10PercentEvery1Minute'
-       }) 
+       }); 
+    });
+    
+    test('Validate Lambda function Runtime == nodejs14.x', () => {
+       assert.hasResourceProperties('AWS::Lambda::Function', {
+          Runtime: 'nodejs14.x' 
+       });
     });
 }); 
 
