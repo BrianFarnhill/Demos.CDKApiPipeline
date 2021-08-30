@@ -28,13 +28,13 @@ describe('REST API Test', () => {
         });
     });
     
-    test('Validate CodeDeploy Deployment Config', () => {
+    test('CodeDeploy Deployment Config == LambdaLinear10PercentEvery1Minute', () => {
        assert.hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
            DeploymentConfigName: 'CodeDeployDefault.LambdaLinear10PercentEvery1Minute'
        }); 
     });
     
-    test('Validate Lambda function Runtime', () => {
+    test('Lambda function Runtime == nodejs14.x', () => {
        assert.hasResourceProperties('AWS::Lambda::Function', {
           Runtime: 'nodejs14.x' 
        });
@@ -47,7 +47,7 @@ describe('REST API Test', () => {
         
     })
     
-    test('Check if auto rollback enabled', () => {
+    test('Check if CodeDeploy deployment group has auto rollback configured', () => {
         assert.hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
             AutoRollbackConfiguration: {
                 Enabled: true,
