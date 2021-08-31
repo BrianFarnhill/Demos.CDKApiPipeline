@@ -1,11 +1,13 @@
 import * as cdk from "aws-cdk-lib";
 import {
+  aws_codebuild as codebuild,
   aws_codepipeline as codepipeline,
   aws_codepipeline_actions as codepipeline_actions,
   aws_events as events,
   aws_events_targets as events_targets,
   aws_codestarnotifications as notifications,
   pipelines as pipelines,
+  RemovalPolicy,
 } from "aws-cdk-lib";
 import { Construct } from 'constructs';
 import CiBuild from "./CiBuild";
@@ -37,7 +39,34 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
     const repoOwner = "BrianFarnhill";
     const repoName = "Demos.CDKApiPipeline";
 
-    CiBuild(this, repoOwner, repoName);
+    const testReports = new codebuild.ReportGroup(this, 'TestReports', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    CiBuild(this, repoOwner, repoName, testReports);
+
+    const synthAction = pipelines.SimpleSynthAction.standardNpmSynth({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
+      buildCommand: 'npm run build',
+      testCommands: [
+        "npm test",
+        "npm audit",
+      ],
+      buildSpec: codebuild.BuildSpec.fromObject({
+        reports: {
+          [testReports.reportGroupArn]:{
+              files: [
+                  '**/test-report.xml',
+              ],
+              'discard-paths': true,
+          }
+        },
+      }),
+      copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT", "SLACK_ARN", "SLACK_SNS_TOPIC_NAME"],
+      rolePolicyStatements: CodeArtifactPermissions,
+    });
 
     const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       pipelineName: 'LambdaDeployDemo-Pipeline',
@@ -50,19 +79,10 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
         oauthToken: cdk.SecretValue.secretsManager("GitHubToken"),
         branch: "main",
       }),
-      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
-        sourceArtifact,
-        cloudAssemblyArtifact,
-        installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
-        buildCommand: 'npm run build',
-        testCommands: [
-          "npm test",
-          "npm audit",
-        ],
-        copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT", "SLACK_ARN", "SLACK_SNS_TOPIC_NAME"],
-        rolePolicyStatements: CodeArtifactPermissions,
-      }),
+      synthAction,
     });
+
+    testReports.grantWrite(synthAction.grantPrincipal);
 
     pipeline.addApplicationStage(new PipelineStage(this, 'PreProd', {
       env: { account: process.env.DEV_ACCOUNT, region: cdk.Aws.REGION }

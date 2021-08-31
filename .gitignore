@@ -8,3 +8,5 @@ node_modules
 cdk.out
 package-lock.json
 .env
+
+test-report.xml
