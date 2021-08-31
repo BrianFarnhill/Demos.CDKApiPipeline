@@ -80,6 +80,7 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
         branch: "main",
       }),
       synthAction,
+      singlePublisherPerType: true,
     });
 
     testReports.grantWrite(synthAction.grantPrincipal);
