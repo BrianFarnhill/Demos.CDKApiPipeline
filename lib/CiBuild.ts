@@ -31,14 +31,14 @@ export default function (PipelineStack: Construct, repoOwner: string, repoName: 
                         "npm test",
                     ]
                 },
-                reports: {
-                    [reportGroup.reportGroupArn]:{
-                        files: [
-                            '**/test-report.xml',
-                        ],
-                        'discard-paths': true,
-                    }
-                  }
+            },
+            reports: {
+                [reportGroup.reportGroupArn]: {
+                    files: [
+                        '**/test-report.xml',
+                    ],
+                    'discard-paths': true,
+                }
             },
         }),
         environmentVariables: {
