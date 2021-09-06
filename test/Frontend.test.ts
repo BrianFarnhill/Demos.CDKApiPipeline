@@ -29,21 +29,32 @@ describe('FrontEnd Test', () => {
         assert.resourceCountIs('AWS::S3::Bucket', 1);
     });
     
-    test('CloudFront default behaviour == S3', () => {
-        // We can use index 0 here because we have already tested above that there's only 1 CloudFront distribution.
-        const defaultCacheId = assert.findResources('AWS::CloudFront::Distribution')[0].Properties.DistributionConfig.DefaultCacheBehavior.TargetOriginId
+    test('Default Caching Policy == CachingOptimized', () => {
+        const cachingOptimizedUuid = '658327ea-f89d-4fab-a63d-7e88639e58f6' // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html 
 
         assert.hasResourceProperties('AWS::CloudFront::Distribution', {
             DistributionConfig: {
-                Origins: Match.arrayWith([
-                    Match.objectLike({
-                        Id: defaultCacheId,
-                        S3OriginConfig: Match.objectLike({})
-                    })
-                ])}
+                DefaultCacheBehavior: Match.objectLike({
+                    CachePolicyId: cachingOptimizedUuid
+                })
+            }
         });
     });
     
+    test('Caching Policy for API Gateway == CachingDisabled', () => {
+        const cachingDisabledUuid = '4135ea2d-6df8-44a3-9df3-4b5a84be39ad' // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html 
+
+        assert.hasResourceProperties('AWS::CloudFront::Distribution', {
+            DistributionConfig: {
+                CacheBehaviors: Match.arrayWith([
+                    Match.objectLike({
+                        PathPattern: '/prod',
+                        CachePolicyId: cachingDisabledUuid
+                    })]
+                )}
+        });
+    });
+
     test('API Gateway path is set to /prod', ()=> {
         assert.hasResourceProperties('AWS::CloudFront::Distribution', {
             DistributionConfig: {
