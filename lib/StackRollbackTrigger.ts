@@ -11,8 +11,6 @@ interface StackRollbackTriggerProps {
 
 export default class extends Construct {
 
-    CanaryFailingAlarm: cw.Alarm;
-
     constructor(scope: Construct, id: string, props: StackRollbackTriggerProps) {
         super(scope, id);
 

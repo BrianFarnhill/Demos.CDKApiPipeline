@@ -5,28 +5,7 @@ import {
 import { Construct } from "constructs";
 import CodeArtifactPermissions from "./CodeArtifactPermissions";
 
-const buildSpec = codebuild.BuildSpec.fromObject({
-    version: "0.2",
-    phases: {
-        install: {
-            commands: [
-                `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
-            ],
-        },
-        build: {
-            commands: [
-                "npm run build",
-            ],
-        },
-        post_build: {
-            commands: [
-                "npm test",
-            ]
-        }
-    }
-});
-
-export default function (PipelineStack: Construct, repoOwner: string, repoName: string) {
+export default function (PipelineStack: Construct, repoOwner: string, repoName: string, reportGroup: codebuild.ReportGroup) {
 
     const ciBuild = new codebuild.Project(PipelineStack, "CIBuild", {
         source: codebuild.Source.gitHub({
@@ -34,7 +13,34 @@ export default function (PipelineStack: Construct, repoOwner: string, repoName: 
             repo: repoName,
             webhook: true,
         }),
-        buildSpec,
+        buildSpec: codebuild.BuildSpec.fromObject({
+            version: "0.2",
+            phases: {
+                install: {
+                    commands: [
+                        `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
+                    ],
+                },
+                build: {
+                    commands: [
+                        "npm run build",
+                    ],
+                },
+                post_build: {
+                    commands: [
+                        "npm test",
+                    ]
+                },
+            },
+            reports: {
+                [reportGroup.reportGroupArn]: {
+                    files: [
+                        '**/test-report.xml',
+                    ],
+                    'discard-paths': true,
+                }
+            },
+        }),
         environmentVariables: {
             REPO_NAME: { value: process.env.REPO_NAME },
             DOMAIN_NAME: { value: process.env.DOMAIN_NAME },
@@ -44,6 +50,8 @@ export default function (PipelineStack: Construct, repoOwner: string, repoName: 
             buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
         },
     });
+
+    reportGroup.grantWrite(ciBuild);
 
     CodeArtifactPermissions.forEach((policy) => {
         ciBuild.addToRolePolicy(policy);
