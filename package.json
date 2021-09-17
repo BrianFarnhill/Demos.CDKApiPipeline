@@ -33,9 +33,10 @@
   "audit-level": "high",
   "lint-staged": {
     "*.ts": [
-      "git secrets --pre_commit_hook -- \"$STAGED_FILES\"",
-      "jest --bail --findRelatedTests \"$STAGED_FILES\"",
-      "echo \"$STAGED_FILES\""
+      "npm run test"
+    ],
+    "*": [
+      "git secrets --pre_commit_hook -- \"$@\""
     ]
   }
 }
