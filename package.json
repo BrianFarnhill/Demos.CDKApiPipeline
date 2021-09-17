@@ -35,7 +35,8 @@
   "lint-staged": {
     "*.ts": [
       "git secrets --pre_commit_hook -- \"$@\"",
-      "jest --bail --findRelatedTests \"$@\""
+      "jest --bail --findRelatedTests \"$@\"",
+      "echo \"$@\""
     ]
   }
 }
