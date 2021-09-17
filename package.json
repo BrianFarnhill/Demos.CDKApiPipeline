@@ -9,7 +9,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "artifactlogin": "aws codeartifact login --tool npm --repository $REPO_NAME --domain $DOMAIN_NAME --domain-owner $DEVOPS_ACCOUNT --namespace demos"
+    "artifactlogin": "aws codeartifact login --tool npm --repository $REPO_NAME --domain $DOMAIN_NAME --domain-owner $DEVOPS_ACCOUNT --namespace demos",
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
     "@aws-cdk/assertions": "^1.119.0",
@@ -18,6 +19,7 @@
     "aws-cdk": "2.0.0-rc.18",
     "jest": "^26.4.2",
     "jest-junit-reporter": "^1.1.0",
+    "pre-commit": "^1.2.2",
     "ts-jest": "^26.2.0",
     "ts-node": "^9.0.0",
     "typescript": "~3.9.7"
@@ -26,7 +28,16 @@
     "@demos/sharedcdkconstruct": "^1.1.0",
     "aws-cdk-lib": "2.0.0-rc.18",
     "constructs": "^10.0.0",
+    "lint-staged": "^11.1.2",
     "source-map-support": "^0.5.16"
   },
-  "audit-level": "high"
+  "audit-level": "high",
+  "lint-staged": {
+    "*.js": [
+      "jest --bail --findRelatedTests"
+    ]
+  },
+  "pre-commit": [
+    "npm run lint-staged"
+  ]
 }
