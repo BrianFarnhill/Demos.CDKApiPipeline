@@ -33,11 +33,9 @@
   },
   "audit-level": "high",
   "lint-staged": {
-    "*.js": [
+    "*.ts": [
+      "git secrets --pre_commit_hook -- \"$@\"",
       "jest --bail --findRelatedTests"
     ]
-  },
-  "pre-commit": [
-    "npm run lint-staged"
-  ]
+  }
 }
