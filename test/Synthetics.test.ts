@@ -34,6 +34,12 @@ describe('Synthetics tests', () => {
         });
     });
 
+    test('The canary does not run inside a VPC', () => {
+        assert.hasResourceProperties('AWS::Synthetics::Canary', {
+            VPCConfig: Match.absentProperty(), 
+        });
+    });
+
     test('Contains a single S3 bucket for storing canary results', () => {
         assert.resourceCountIs('AWS::S3::Bucket', 1);
     });
