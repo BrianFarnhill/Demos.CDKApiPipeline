@@ -1,6 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
-import { Stack, App, aws_apigateway as apigw }  from 'aws-cdk-lib';
-import Synthetics from '../lib/Synthetics';
+import { App }  from 'aws-cdk-lib';
 import { DemosCdkApiPipelineStack } from '../lib/MainStack';
 
 describe('Synthetics tests', () => {
