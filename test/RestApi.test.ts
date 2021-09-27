@@ -41,10 +41,11 @@ describe('REST API Test', () => {
     });
     
     test('CodeDeploy Alarm count >= 1', () => {
-        assert.findResources('AWS::CodeDeploy::DeploymentGroup').forEach( EachDeploymentGroup => {
-            expect(EachDeploymentGroup.Properties.AlarmConfiguration.Alarms.length).toBeGreaterThanOrEqual(1);
-        });
-        
+        const deploymentGroups = assert.findResources('AWS::CodeDeploy::DeploymentGroup');
+        Object.keys(deploymentGroups).forEach((resourceName: string) => {
+            const resource = deploymentGroups[resourceName];
+            expect(resource.Properties.AlarmConfiguration.Alarms.length).toBeGreaterThanOrEqual(1);
+        });        
     })
     
     test('Check if CodeDeploy deployment group has auto rollback configured', () => {

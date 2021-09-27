@@ -25,7 +25,7 @@ describe("IAM tests", () => {
         mutationPermissions.forEach((permission) => {
             test(`Does not have any IAM policy statements including ${permission}`, () => {
 
-                expect(assert.findResources("AWS::IAM::Policy", {
+                const arrayMatches = assert.findResources("AWS::IAM::Policy", {
                     Properties: {
                         PolicyDocument: {
                             Statement: Match.arrayWith([Match.objectLike({
@@ -34,16 +34,18 @@ describe("IAM tests", () => {
                             })]),
                         },
                     },
-                }).length).toBe(0);
+                });
+                expect(Object.keys(arrayMatches).length).toBe(0);
 
-                expect(assert.findResources("AWS::IAM::Policy", {
+                const directMatches = assert.findResources("AWS::IAM::Policy", {
                     PolicyDoucment: {
                         Statement: Match.arrayWith([Match.objectLike({
                             Action: permission,
                             Effect: "Allow",
                         })]),
                     },
-                }).length).toBe(0);
+                });
+                expect(Object.keys(directMatches).length).toBe(0);
             });
         });
     });
