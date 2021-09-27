@@ -52,7 +52,7 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
       buildCommand: 'npm run build',
       testCommands: [
         "npm test",
-        "npm audit",
+        "npm audit --audit-level=critical",
       ],
       buildSpec: codebuild.BuildSpec.fromObject({
         reports: {
