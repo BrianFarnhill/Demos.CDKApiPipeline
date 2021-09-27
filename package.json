@@ -30,7 +30,7 @@
     "lint-staged": "^11.1.2",
     "source-map-support": "^0.5.16"
   },
-  "audit-level": "high",
+  "audit-level": "critical",
   "lint-staged": {
     "*.ts": [
       "npm run test"
