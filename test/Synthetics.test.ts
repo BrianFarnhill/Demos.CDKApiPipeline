@@ -36,7 +36,7 @@ describe('Synthetics tests', () => {
 
     test('The canary does not run inside a VPC', () => {
         assert.hasResourceProperties('AWS::Synthetics::Canary', {
-            VPCConfig: Match.absentProperty(), 
+            VPCConfig: Match.absent(), 
         });
     });
 

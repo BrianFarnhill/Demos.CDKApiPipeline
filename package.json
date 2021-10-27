@@ -16,16 +16,16 @@
     "@aws-cdk/assertions": "^1.119.0",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
-    "aws-cdk": "2.0.0-rc.18",
-    "jest": "^26.4.2",
+    "aws-cdk": "^2.0.0-rc.27",
+    "jest": "^27.3.1",
     "jest-junit-reporter": "^1.1.0",
     "ts-jest": "^26.2.0",
     "ts-node": "^9.0.0",
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@demos/sharedcdkconstruct": "^1.1.0",
-    "aws-cdk-lib": "2.0.0-rc.18",
+    "@demos/sharedcdkconstruct": "^1.1.9",
+    "aws-cdk-lib": "^2.0.0-rc.27",
     "constructs": "^10.0.0",
     "lint-staged": "^11.1.2",
     "source-map-support": "^0.5.16"

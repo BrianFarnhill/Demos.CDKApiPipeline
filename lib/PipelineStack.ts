@@ -45,16 +45,22 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
 
     CiBuild(this, repoOwner, repoName, testReports);
 
-    const synthAction = pipelines.SimpleSynthAction.standardNpmSynth({
-      sourceArtifact,
-      cloudAssemblyArtifact,
-      installCommand: `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos && npm install`,
-      buildCommand: 'npm run build',
-      testCommands: [
-        "npm test",
-        "npm audit --audit-level=critical",
+    const synthAction = new pipelines.CodeBuildStep("Synth", {
+      input: pipelines.CodePipelineSource.gitHub(repoName, "main", {
+        authentication: cdk.SecretValue.secretsManager("GitHubToken"),
+      }),
+      installCommands: [
+        `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos`,
+        'npm install',
       ],
-      buildSpec: codebuild.BuildSpec.fromObject({
+      commands: [
+        'npm run build',
+        'npm test',
+        'npm audit --audit-level=critical',
+        'npx cdk synth',
+      ],
+      primaryOutputDirectory: 'cdk.out',
+      partialBuildSpec: codebuild.BuildSpec.fromObject({
         reports: {
           [testReports.reportGroupArn]:{
               files: [
@@ -64,32 +70,31 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
           }
         },
       }),
-      copyEnvironmentVariables: ["DEV_ACCOUNT", "PROD_ACCOUNT", "REPO_NAME", "DOMAIN_NAME", "DEVOPS_ACCOUNT", "SLACK_ARN", "SLACK_SNS_TOPIC_NAME"],
+      env: {
+        'DEV_ACCOUNT': process.env.DEV_ACCOUNT || '',
+        'PROD_ACCOUNT': process.env.PROD_ACCOUNT || '', 
+        'REPO_NAME': process.env.REPO_NAME || '',
+        'DOMAIN_NAME': process.env.DOMAIN_NAME || '',
+        'DEVOPS_ACCOUNT': process.env.DEVOPS_ACCOUNT || '',
+        'SLACK_ARN': process.env.SLACK_ARN || '',
+        'SLACK_SNS_TOPIC_NAME': process.env.SLACK_SNS_TOPIC_NAME || '',
+      },
       rolePolicyStatements: CodeArtifactPermissions,
     });
 
-    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       pipelineName: 'LambdaDeployDemo-Pipeline',
-      cloudAssemblyArtifact,
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
-        actionName: 'GitHub',
-        output: sourceArtifact,
-        owner: repoOwner,
-        repo: repoName,
-        oauthToken: cdk.SecretValue.secretsManager("GitHubToken"),
-        branch: "main",
-      }),
-      synthAction,
-      singlePublisherPerType: true,
+      synth: synthAction,
+      publishAssetsInParallel: true,
     });
 
     testReports.grantWrite(synthAction.grantPrincipal);
 
-    pipeline.addApplicationStage(new PipelineStage(this, 'PreProd', {
+    pipeline.addStage(new PipelineStage(this, 'PreProd', {
       env: { account: process.env.DEV_ACCOUNT, region: cdk.Aws.REGION }
     }));
 
-    pipeline.addApplicationStage(new PipelineStage(this, 'Prod', {
+    pipeline.addStage(new PipelineStage(this, 'Prod', {
       env: { account: process.env.PROD_ACCOUNT, region: cdk.Aws.REGION }
     }));
 
@@ -106,7 +111,7 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
           year: "*",
       }),
   });
-  weeklyTrigger.addTarget(new events_targets.CodePipeline(pipeline.codePipeline));
+  weeklyTrigger.addTarget(new events_targets.CodePipeline(pipeline.pipeline));
 
     // Auto trigger pipeline when new shared package is deployed
     const packageUpdatedRule = new events.Rule(this, "CodeArtifactPublishes", {
@@ -123,12 +128,12 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
         }
       }
     });
-    packageUpdatedRule.addTarget(new events_targets.CodePipeline(pipeline.codePipeline));
+    packageUpdatedRule.addTarget(new events_targets.CodePipeline(pipeline.pipeline));
 
     if (process.env.SLACK_ARN !== undefined) {
       new notifications.CfnNotificationRule(this, "FailedPipelineStageNotifications", {
         name: "FailedPipelineActions",
-        resource: pipeline.codePipeline.pipelineArn,
+        resource: pipeline.pipeline.pipelineArn,
         detailType: 'FULL',
         eventTypeIds: ['codepipeline-pipeline-action-execution-failed'],
         targets: [{
