@@ -82,7 +82,7 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       pipelineName: 'LambdaDeployDemo-Pipeline',
       synth: synthAction,
-      publishAssetsInParallel: true,
+      publishAssetsInParallel: false,
       crossAccountKeys: true,
     });
 
@@ -95,7 +95,7 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
     }));
 
     pipeline.buildPipeline();
-    
+
     testReports.grantWrite(synthAction.grantPrincipal);
     
 
