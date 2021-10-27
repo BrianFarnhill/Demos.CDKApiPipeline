@@ -20,9 +20,11 @@ import { DemosCdkApiPipelineStack } from './MainStack';
  */
 class PipelineStage extends cdk.Stage {
 
-  constructor(scope: Construct, id: string, props?: cdk.StageProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StageProps, customSynth?: cdk.IStackSynthesizer) {
     super(scope, id, props);
-    new DemosCdkApiPipelineStack(this, 'LambdaDeployDemo');
+    new DemosCdkApiPipelineStack(this, 'LambdaDeployDemo', {
+      synthesizer: customSynth || undefined,
+    });
   }
 }
 
@@ -88,11 +90,11 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
 
     pipeline.addStage(new PipelineStage(this, 'PreProd', {
       env: { account: process.env.DEV_ACCOUNT, region: cdk.Aws.REGION }
-    }));
+    }, new cdk.DefaultStackSynthesizer({ qualifier: 'apidemo' })));
 
     pipeline.addStage(new PipelineStage(this, 'Prod', {
       env: { account: process.env.PROD_ACCOUNT, region: cdk.Aws.REGION }
-    }));
+    }, new cdk.DefaultStackSynthesizer({ qualifier: 'apidemo' })));
 
     pipeline.buildPipeline();
 
