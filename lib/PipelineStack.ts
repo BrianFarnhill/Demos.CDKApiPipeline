@@ -33,9 +33,6 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const sourceArtifact = new codepipeline.Artifact();
-    const cloudAssemblyArtifact = new codepipeline.Artifact();
-
     const repoOwner = "BrianFarnhill";
     const repoName = "Demos.CDKApiPipeline";
 
@@ -46,7 +43,7 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
     CiBuild(this, repoOwner, repoName, testReports);
 
     const synthAction = new pipelines.CodeBuildStep("Synth", {
-      input: pipelines.CodePipelineSource.gitHub(repoName, "main", {
+      input: pipelines.CodePipelineSource.gitHub(`${repoOwner}/${repoName}`, "main", {
         authentication: cdk.SecretValue.secretsManager("GitHubToken"),
       }),
       installCommands: [
@@ -86,9 +83,8 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
       pipelineName: 'LambdaDeployDemo-Pipeline',
       synth: synthAction,
       publishAssetsInParallel: true,
+      crossAccountKeys: true,
     });
-
-    testReports.grantWrite(synthAction.grantPrincipal);
 
     pipeline.addStage(new PipelineStage(this, 'PreProd', {
       env: { account: process.env.DEV_ACCOUNT, region: cdk.Aws.REGION }
@@ -98,6 +94,10 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
       env: { account: process.env.PROD_ACCOUNT, region: cdk.Aws.REGION }
     }));
 
+    pipeline.buildPipeline();
+    
+    testReports.grantWrite(synthAction.grantPrincipal);
+    
 
     // Auto trigger the ppipeline every week to ensure fresh dependency builds are pulled in
     const weeklyTrigger = new events.Rule(this, "WeeklyRelease", {
