@@ -92,14 +92,15 @@ export default class extends Construct {
             evaluationPeriods: 1,
             metric: new cw.Metric({
                 namespace: "CloudWatchSynthetics",
-                metricName: "Failed requests",
+                metricName: "SuccessPercent",
                 dimensionsMap: {
                     CanaryName: canary.ref,
                 },
                 period: cdk.Duration.minutes(1),
                 statistic: "sum",
             }),
-            threshold: 1,
+            threshold: 100,
+            comparisonOperator: cw.ComparisonOperator.LESS_THAN_THRESHOLD,
             treatMissingData: cw.TreatMissingData.NOT_BREACHING,
         });
     }
