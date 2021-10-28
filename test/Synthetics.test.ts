@@ -65,7 +65,7 @@ describe('Synthetics tests', () => {
                   Value: Match.objectLike({}),
                 }
               ]),
-              MetricName: 'Failed requests',
+              MetricName: 'SuccessPercent',
               Namespace: 'CloudWatchSynthetics',
         });
     });
