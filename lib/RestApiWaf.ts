@@ -71,7 +71,7 @@ export default class extends Construct {
         const acl = new waf.CfnWebACL(this, "APIACL", {
             defaultAction: { allow: {} },
             scope: "REGIONAL",
-            rules: GetApiRules("BLOCK"),
+            rules: GetApiRules("COUNT"),
             visibilityConfig: {
                 cloudWatchMetricsEnabled: true,
                 metricName: "waf",
