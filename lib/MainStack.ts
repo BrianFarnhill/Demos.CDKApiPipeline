@@ -29,10 +29,10 @@ export class DemosCdkApiPipelineStack extends Stack {
       SyntheticFailureAlarm: synthetics.CanaryFailingAlarm,
     });
 
-    new StackRollbackTrigger(this, "RollbackTrigger", {
-      Alarms: [
-        synthetics.CanaryFailingAlarm,
-      ],
-    });
+    // new StackRollbackTrigger(this, "RollbackTrigger", {
+    //   Alarms: [
+    //     synthetics.CanaryFailingAlarm,
+    //   ],
+    // });
   }
 }
