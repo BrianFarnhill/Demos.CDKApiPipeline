@@ -29,7 +29,7 @@ export default class extends Construct {
                 restrictPublicBuckets: true,
             },
             lifecycleRules: [{
-                expiration: cdk.Duration.days(31),
+                expiration: cdk.Duration.days(7),
             }],
             removalPolicy: cdk.RemovalPolicy.DESTROY,
             autoDeleteObjects: true,
