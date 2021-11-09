@@ -44,7 +44,7 @@ describe('Synthetics tests', () => {
         assert.resourceCountIs('AWS::S3::Bucket', 1);
     });
 
-    test('The S3 bucket deletes items that are 31 days old', () => {
+    test('The S3 bucket deletes items that are 7 days old', () => {
         assert.hasResourceProperties('AWS::S3::Bucket', {
             LifecycleConfiguration: {
                 Rules: Match.arrayWith([
