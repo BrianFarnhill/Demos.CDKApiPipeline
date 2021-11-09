@@ -1,6 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import {
-    aws_apigateway as apigw,
+    aws_apigateway as api,
     aws_synthetics as synth,
     aws_cloudwatch as cw,
     aws_s3 as s3,
@@ -11,7 +11,7 @@ import * as path from "path";
 import * as fs from "fs";
 
 interface SyntheticsProps {
-    ApiGateway: apigw.IRestApi;
+    ApiGateway: api.IRestApi;
 }
 
 export default class extends Construct {
@@ -21,7 +21,7 @@ export default class extends Construct {
     constructor(scope: Construct, id: string, props: SyntheticsProps) {
         super(scope, id);
 
-        const artifactBucket = new s3.Bucket(this, "SiteBucket", {
+        const artifactBucket = new s3.Bucket(this, "SyntheticsBucket", {
             blockPublicAccess: {
                 blockPublicAcls: true,
                 blockPublicPolicy: true,
@@ -38,7 +38,7 @@ export default class extends Construct {
         const synthRole = new iam.Role(this, "SyntheticsRole", {
             assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
             inlinePolicies: {
-                "Synethics": new iam.PolicyDocument({
+                "Synthetics": new iam.PolicyDocument({
                     statements: [
                         new iam.PolicyStatement({
                             actions: ["s3:GetBucketLocation"],
