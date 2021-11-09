@@ -49,7 +49,7 @@ describe('Synthetics tests', () => {
             LifecycleConfiguration: {
                 Rules: Match.arrayWith([
                   {
-                    ExpirationInDays: 31,
+                    ExpirationInDays: 7,
                     Status: "Enabled"
                   }
                 ]),
