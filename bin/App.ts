@@ -5,8 +5,8 @@ import { DemosCdkApiPipelineStack } from '../lib/MainStack';
 import { CdkpipelinesDemoPipelineStack } from "../lib/PipelineStack";
 
 const app = new cdk.App();
-new DemosCdkApiPipelineStack(app, 'MainStack', {});
+new DemosCdkApiPipelineStack(app, 'ApiDemoMainStack', {});
 
-new CdkpipelinesDemoPipelineStack(app, 'PipelineStack', {
+new CdkpipelinesDemoPipelineStack(app, 'ApiDemoPipelineStack', {
   env: { account: process.env.DEVOPS_ACCOUNT, region: process.env.AWS_REGION },
 });
