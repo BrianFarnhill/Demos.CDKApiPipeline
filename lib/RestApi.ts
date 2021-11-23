@@ -15,14 +15,14 @@ export default class extends Construct {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        const demoFunciton = new democonstruct.DemoFunction(this, "DemoFunction", {});
+        const demoFunction = new democonstruct.DemoFunction(this, "DemoFunction", {});
         
         // Uncomment this line to cause the security tests to fail
-        //demoFunciton.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
+        demoFunction.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
 
         const versionAlias = new lambda.Alias(this, 'DemoFunctionAlias', {
             aliasName: 'live',
-            version: demoFunciton.LambdaFunction.currentVersion,
+            version: demoFunction.LambdaFunction.currentVersion,
         });
 
         this.ApiGateway = new apigw.LambdaRestApi(this, 'Gateway', {
