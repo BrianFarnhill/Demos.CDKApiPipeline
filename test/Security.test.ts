@@ -38,7 +38,7 @@ describe("IAM tests", () => {
                 expect(Object.keys(arrayMatches).length).toBe(0);
 
                 const directMatches = assert.findResources("AWS::IAM::Policy", {
-                    PolicyDoucment: {
+                    PolicyDocument: {
                         Statement: Match.arrayWith([Match.objectLike({
                             Action: permission,
                             Effect: "Allow",

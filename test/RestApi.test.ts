@@ -21,10 +21,8 @@ describe('REST API Test', () => {
     });
     
     test('Check if CodeDeploy for Lambda exist', ()=> {
-        assert.hasResource('AWS::CodeDeploy::Application', {
-            Properties: {
-                ComputePlatform: 'Lambda'    
-            }
+        assert.hasResourceProperties('AWS::CodeDeploy::Application', {
+            ComputePlatform: 'Lambda'
         });
     });
     
@@ -55,5 +53,4 @@ describe('REST API Test', () => {
             }
         })
     })
-
 }); 

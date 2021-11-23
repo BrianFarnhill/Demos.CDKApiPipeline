@@ -18,7 +18,7 @@ export default class extends Construct {
         const demoFunction = new democonstruct.DemoFunction(this, "DemoFunction", {});
         
         // Uncomment this line to cause the security tests to fail
-        demoFunction.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
+        //demoFunction.LambdaFunction.addToRolePolicy(new iam.PolicyStatement({ actions: [ "iam:CreateUser" ], resources: [ "*" ] }))
 
         const versionAlias = new lambda.Alias(this, 'DemoFunctionAlias', {
             aliasName: 'live',
