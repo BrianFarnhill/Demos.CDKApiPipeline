@@ -48,7 +48,8 @@ export class CdkpipelinesDemoPipelineStack extends cdk.Stack {
       }),
       installCommands: [
         `aws codeartifact login --tool npm --repository ${process.env.REPO_NAME} --domain ${process.env.DOMAIN_NAME} --domain-owner ${process.env.DEVOPS_ACCOUNT} --namespace demos`,
-        'npm install',
+        'npm install @demos/sharedcdkconstruct --save',
+        'npm ci',
       ],
       commands: [
         'npm run build',
