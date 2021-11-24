@@ -24,7 +24,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@demos/sharedcdkconstruct": "^1.1.16",
+    "@demos/sharedcdkconstruct": "^1.1.17",
     "aws-cdk-lib": "^2.0.0-rc.30",
     "cdk": "^2.0.0-rc.30",
     "constructs": "^10.0.0",
