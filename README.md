@@ -51,7 +51,7 @@ export DOMAIN_NAME=[Your CodeArtifact domain name]
 export REPO_NAME=[Your CodeArtifact repository name]
 export AWS_REGION=[Your AWS Region]("https://docs.aws.amazon.com/general/latest/gr/rande.html")
 export SLACK_ARN=[ARN of the AWS Chatbot notification channel for failed actions - OPTIONAL]
-export SLACK_SNS_ARN=[ARN of the SNS topic used by the above Slack Chatbot - for incident manager - OPTIONAL]
+export SLACK_SNS_TOPIC_NAME=[ARN of the SNS topic used by the above Slack Chatbot - for incident manager - OPTIONAL]
 ```
 
 ### Deploying the pipeline
@@ -59,7 +59,7 @@ export SLACK_SNS_ARN=[ARN of the SNS topic used by the above Slack Chatbot - for
 To deploy the pipeline to the devops account, execute this command:
 
 ``` bash
-npx cdk deploy PipelineStack
+npx cdk deploy ApiDemoPipelineStack
 ```
 
 Once this has completed, the solution will deploy new versions automatically when code is pushed
