@@ -69,13 +69,15 @@ deploy the pipeline like this one.
 
 ## Other notes
 
-### Why is there no package-lock.json file in here?
+### SharedCDKConstruct isn't in the package-lock.json file
 
-Great question - the short version is that when you use AWS CodeArtifact the full URL that your
-repository runs at includes your AWS Account ID. Since this is a service that is normally used
-for repositories that are private this wouldn't be a concern, but for the purposes of this demo
-and me putting the code on GitHub, I've chosen to omit it. This also means that my CodeBuild 
-for the CDK project is doing a full `npm install` instead of `npm ci`. If you don't understand
-the implications of what having a package lock file in your project does I suggest taking some
-time to read up on it, and making your own informed decisions about using it - but typically
-speaking I would normally include one. 
+Good observation - this is deliberate. Because CodeArtifact URLs include the AWS account ID of the
+account they are hosted in, I decided to be overly cautious and remove them from my package-lock,
+using this command to install it instead.
+
+``` bash
+npm install @demos/sharedcdkconstruct --no-package-lock
+```
+
+This is why you'll see a specific install command for it in the build, but everything will reference
+what is in the lock file as normal.
